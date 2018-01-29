@@ -29,7 +29,7 @@ You need the library Tkinter to make the auction clock. Here is an example of co
 
 from Tkinter import *
 root = Tk()
-auctioneer = NewAuctionClock.Player("Machteld")
+auctioneer = AuctionClock.Player("Machteld")
 bidders = [AuctionClock.Player("Johannes"), AuctionClock.Player("Pieter"), AuctionClock.Player("Maria")]
 AuctionClock.choosePlayer(bidders, "Johannes")
 AuctionClock.RunAC(root, 100, auctioneer, bidders, "fleur.jpg")
