@@ -16,10 +16,10 @@ class Player:
 		self.apparance = None
 		self.colour = None
 
-	def add_animal(self, flower):
+	def add_flower(self, flower):
 		self.flowers.append(flower)
 
-	def del_animal(self, animal):
+	def del_flower(self, flower):
 		self.flowers.remove(flower)
 
 	def add_money(self, money):
@@ -40,6 +40,7 @@ class RunAC():
     self.startValue = amount
     self.bidders = bidders
     self.bidder = random.choice([bidder for bidder in bidders if bidder.computer and sum(bidder.money) > 0])
+    self.image = Image.open(imageFile)
     self.maxBid = sum(self.bidder.money)
     self.opponentAmount = random.randrange(0, self.maxBid, 10)
     self.bidAmount = 0 
@@ -66,11 +67,10 @@ class RunAC():
 
 
   def showImage(self):
-    image = Image.open(imageFile)
-    image = image.resize((100, 100), Image.ANTIALIAS)	
-    photo = ImageTk.PhotoImage(image)		
+    image = self.image.resize((100, 100), Image.ANTIALIAS)	
+    photo = ImageTk.PhotoImage(image)
+		
     self.master.one = photo
-
     self.canvas.create_image(500, 250, image = photo)
 
 
@@ -79,9 +79,16 @@ class RunAC():
     return
 
 
+  def calculateCoordinatesCircle(self, r):
+	x = 500 + r * math.cos(self.angle)
+	y = 250 - r * math.sin(self.angle)
+
+	return x, y
+
+
   def createMarkingPoint(self):
-    x = 500 + 182 * math.cos(self.angle)
-    y = 250 - 182 * math.sin(self.angle)
+    x, y = self.calculateCoordinatesCircle(182)
+
     self.canvas.create_oval(x - 5, y - 5, x + 5, y + 5, fill="yellow")   
     return
 
@@ -90,7 +97,7 @@ class RunAC():
     val = self.startValue
     numberOfNumbers = val / 50
     diff = 2.0 / numberOfNumbers * math.pi
-    angle = 0.51 * math.pi #Because the calculations are made with the angle from the positive x-axis is the beginpoint first put on a half-pi, because the pointer from above is running. Subsequently, here is 0:01 pi added to, because the 100 must be above the first compartment, and not above the separation line.
+    angle = 0.51 * math.pi #The calculations are made with the angle from the positive x-axis is the beginpoint first put on a half-pi, because the pointer from above is running. Subsequently, here is 0:01 pi added, because the 100 must be above the first compartment, and not above the separation line.
 
     for i in range(numberOfNumbers):
         x1 = 500 + 225 * math.cos(angle)
@@ -109,12 +116,10 @@ class RunAC():
     diff = 2.0 / numberOfLines * math.pi
 
     for i in range(numberOfLines):
-      x1 = 500 + 200 * math.cos(self.angle) 
-      x2 = 250 - 200 * math.sin(self.angle)
-      y1 = 500 + 175 * math.cos(self.angle)
-      y2 = 250 - 175 * math.sin(self.angle)
+      x1, y1 = self.calculateCoordinatesCircle(200) 
+      x2, y2 = self.calculateCoordinatesCircle(175)
 
-      self.canvas.create_line(x1, x2, y1, y2)
+      self.canvas.create_line(x1, y1, x2, y2)
       self.angle += diff
 
     return
@@ -190,5 +195,16 @@ def giveHighestBidder(auctionClock, bidders):
 				return bidder
 
 	return auctionClock.bidder
+
+if __name__ == '__main__':
+	root = Tk()
+	auctioneer = Player("Machteld")
+	bidders = [Player("Johannes"), Player("Pieter"), Player("Maria")]
+
+	choosePlayer(bidders, "Johannes")
+	RunAC(root, 100, auctioneer, bidders, "fleur.jpg")
+	root.destroy()
+	root.mainloop()
+
 
 
